@@ -121,13 +121,12 @@ def save_file(data):
                         else:
                             f.write('\n\n> {} '.format(stamp_to_datetime(oldTimestamp)))
                         # 转发内容
-                        f.write(
-                            '\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
+                        f.write('\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
                                                         str(forwardSourceFeed["message"])))
                         # 附带图片
-                        picArr = item["picArr"]
-                        for item in picArr:
-                            f.write('\n[图片]({})'.format(picArr[i]))
+                        oldPicArr = forwardSourceFeed["picArr"]
+                        for item in oldPicArr:
+                            f.write('\n[图片]({})'.format(item))
                 f.write('\n\n ------- \n\n')
 
         f.write(old)
