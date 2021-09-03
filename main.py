@@ -105,7 +105,8 @@ def save_file(data):
                 for i in range(0, len(picArr)):
                     if i == 0:
                         f.write('\n\n<div class="album">')
-                    f.write('\n<img class="img-item" src="{}" />'.format(picArr[i]))
+                    if picArr[i] != "":
+                        f.write('\n<img class="img-item" src="{}" />'.format(picArr[i]))
                     if i == len(picArr) - 1:
                         f.write('\n</div>')
 
@@ -130,7 +131,8 @@ def save_file(data):
                         # 附带图片
                         oldPicArr = forwardSourceFeed["picArr"]
                         for item in oldPicArr:
-                            f.write('\n[图片]({})'.format(item))
+                            if item != "":
+                                f.write('\n[图片]({})'.format(item))
                 f.write('\n\n ------- \n\n')
 
         f.write(old)
@@ -185,7 +187,8 @@ def save_detail_file(data):
             for i in range(0, len(picArr)):
                 if i == 0:
                     f.write('\n\n<div class="album">')
-                f.write('\n<img class="img-item" src="{}" />'.format(picArr[i]))
+                if picArr[i] != "":
+                    f.write('\n<img class="img-item" src="{}" />'.format(picArr[i]))
                 if i == len(picArr) - 1:
                     f.write('\n</div>')
 
@@ -207,7 +210,8 @@ def save_detail_file(data):
                     # 附带图片
                     oldPicArr = forwardSourceFeed["picArr"]
                     for item in oldPicArr:
-                        f.write('\n[图片]({})'.format(item))
+                        if item != "":
+                            f.write('\n[图片]({})'.format(item))
             f.write('\n\n ------- \n\n')
 
         f.close()
