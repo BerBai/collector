@@ -20,6 +20,10 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Bulit Python
+        run: |
+          pip install -r requirements.txt
+
       - name: Complete App
         run: |
           git config --local user.email "tomig@qq.com"
