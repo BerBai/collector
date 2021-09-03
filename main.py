@@ -44,7 +44,7 @@ def request_cool(token, url):
     return data
 
 
-def read_ini(newLastTime):
+def read_ini(newLastTime=0, type='lastTime'):
     """
     读取配置文件
     :return:
@@ -52,12 +52,13 @@ def read_ini(newLastTime):
 
     cfg = configparser.ConfigParser()
     cfg.read("./save.ini")
-    lastTime = cfg.get("time", "lastTime")
 
-    if newLastTime > int(lastTime):
-        cfg.set("time", "lastTime", str(newLastTime))
-        cfg.write(open("save.ini", "w"))
-    return lastTime
+    data = cfg.get("time", type)
+    if type == 'lastTime':
+        if newLastTime > int(data):
+            cfg.set("time", "lastTime", str(newLastTime))
+            cfg.write(open("save.ini", "w"))
+    return data
 
 
 def save_file(data):
@@ -81,7 +82,7 @@ def save_file(data):
             f.close()
 
     newLastTime = data['data'][0]['dateline']
-    lastTime = read_ini(newLastTime)
+    lastTime = read_ini()
     with open(path, 'w+', encoding='utf-8') as f:
         f.seek(0)
         for item in data["data"]:
@@ -91,7 +92,8 @@ def save_file(data):
                 timestamp = int(item["dateline"]) + 8 * 60 * 60
                 messageTitle = item["message_title"]
                 if messageTitle != '':
-                    f.write('\n\n ## [{} {}]({}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
+                    f.write(
+                        '\n\n ## [{} {}]({}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
                 else:
                     f.write('\n\n ## [{}]({}.md) '.format(str(stamp_to_datetime(timestamp)), item["id"]))
 
@@ -122,7 +124,8 @@ def save_file(data):
                         else:
                             f.write('\n\n> [{}]({}) '.format(stamp_to_datetime(oldTimestamp), forwardSourceFeed["id"]))
                         # 转发内容
-                        f.write('\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
+                        f.write(
+                            '\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
                                                         str(forwardSourceFeed["message"])))
                         # 附带图片
                         oldPicArr = forwardSourceFeed["picArr"]
@@ -162,9 +165,9 @@ def save_detail_file(data):
                 f.close()
         url = 'https://api.coolapk.com/v6/feed/detail?id=' + str(post["id"])
         detailData = request_cool(get_token(), url)["data"]
-        print(detailData)
-        if detailData["dateline"] <= int(read_ini(detailData["dateline"])):
+        if detailData["dateline"] < int(read_ini(detailData["dateline"])):
             break
+        print(detailData)
         with open(path, 'w+', encoding='utf-8') as f:
             f.seek(0)
             timestamp = int(detailData["dateline"]) + 8 * 60 * 60
