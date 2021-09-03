@@ -71,14 +71,14 @@ def save_file(data):
     # 时间命名文件
     path = root + timeName + '.md'
     # 固定
-    path = root + "2021年09月02日.md"
+    path = root + "2021年09月03日.md"
     old = ''
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as f:
             next(f)
             next(f)
-            old = f.read();
-            f.close();
+            old = f.read()
+            f.close()
 
     newLastTime = data['data'][0]['dateline']
     lastTime = read_ini(newLastTime)
@@ -91,9 +91,9 @@ def save_file(data):
                 timestamp = int(item["dateline"]) + 8 * 60 * 60
                 messageTitle = item["message_title"]
                 if messageTitle != '':
-                    f.write('\n\n ## {} '.format(messageTitle + str(stamp_to_datetime(timestamp))))
+                    f.write('\n\n ## [{} {}]({}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
                 else:
-                    f.write('\n\n ## {} '.format(str(stamp_to_datetime(timestamp))))
+                    f.write('\n\n ## [{}]({}.md) '.format(str(stamp_to_datetime(timestamp)), item["id"]))
 
                 # 内容
                 f.write('\n\n [{}]({}) ：{} '.format(item["username"], item["shareUrl"], item["message"]))
@@ -107,19 +107,20 @@ def save_file(data):
                     if i == len(picArr) - 1:
                         f.write('\n</div>')
 
-                # 是否转发 空：原创 feed：转发+评论
-                forwardSourceType = item["forwardSourceType"]
-                if forwardSourceType == "feed":
+                # 是否转发
+                if ("forwardSourceFeed" in item):
                     forwardSourceFeed = item["forwardSourceFeed"]
                     if forwardSourceFeed is None:
                         f.write('\n\n> {} '.format("原贴已不存在"))
                     else:
+                        # 标题
                         oldTimestamp = int(forwardSourceFeed["dateline"]) + 8 * 60 * 60
                         oldMessageTitle = forwardSourceFeed["message_title"]
                         if messageTitle != '':
-                            f.write('\n\n> {} {}'.format(oldMessageTitle, stamp_to_datetime(oldTimestamp)))
+                            f.write('\n\n> [{} {}]({})'.format(oldMessageTitle, stamp_to_datetime(oldTimestamp),
+                                                               forwardSourceFeed["id"]))
                         else:
-                            f.write('\n\n> {} '.format(stamp_to_datetime(oldTimestamp)))
+                            f.write('\n\n> [{}]({}) '.format(stamp_to_datetime(oldTimestamp), forwardSourceFeed["id"]))
                         # 转发内容
                         f.write('\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
                                                         str(forwardSourceFeed["message"])))
@@ -138,9 +139,85 @@ def save_file(data):
         old = f.read()
         f.seek(0)
         f.write('> {}更新\n'.format(fileHead))
-        f.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taotie6/sampleJSON@main/css/photo_show.css">')
+        f.write(
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taotie6/sampleJSON@main/css/photo_show.css">\n')
         f.write(old)
     f.close()
+
+
+def save_detail_file(data):
+    timeName = time.strftime('%Y{y}%m{m}%d{d}', time.localtime()).format(y='年', m='月', d='日')
+    fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
+    root = "./savefile/"
+
+    for post in data["data"]:
+        # 文件路径
+        path = root + str(post["id"]) + ".md"
+        old = ''
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                next(f)
+                next(f)
+                old = f.read()
+                f.close()
+        url = 'https://api.coolapk.com/v6/feed/detail?id=' + str(post["id"])
+        detailData = request_cool(get_token(), url)["data"]
+        print(detailData)
+        if detailData["dateline"] <= read_ini(detailData["dateline"]):
+            break
+        with open(path, 'w+', encoding='utf-8') as f:
+            f.seek(0)
+            timestamp = int(detailData["dateline"]) + 8 * 60 * 60
+            messageTitle = detailData["message_title"]
+            if messageTitle != '':
+                f.write('\n\n ## {} {}'.format(messageTitle, str(stamp_to_datetime(timestamp))))
+            else:
+                f.write('\n\n ## {} '.format(str(stamp_to_datetime(timestamp))))
+
+            # 内容
+            f.write('\n\n [{}]({}) ：{} '.format(detailData["username"], detailData["shareUrl"], detailData["message"]))
+
+            # 附带图片
+            picArr = detailData["picArr"]
+            for i in range(0, len(picArr)):
+                if i == 0:
+                    f.write('\n\n<div class="album">')
+                f.write('\n<img class="img-item" src="{}" />'.format(picArr[i]))
+                if i == len(picArr) - 1:
+                    f.write('\n</div>')
+
+            # 是否转发 空：原创 feed：转发+评论
+            if ("forwardSourceFeed" in detailData):
+                forwardSourceFeed = detailData["forwardSourceFeed"]
+                if forwardSourceFeed is None:
+                    f.write('\n\n> {} '.format("原贴已不存在"))
+                else:
+                    oldTimestamp = int(forwardSourceFeed["dateline"]) + 8 * 60 * 60
+                    oldMessageTitle = forwardSourceFeed["message_title"]
+                    if messageTitle != '':
+                        f.write('\n\n> {} {}'.format(oldMessageTitle, stamp_to_datetime(oldTimestamp)))
+                    else:
+                        f.write('\n\n> {} '.format(stamp_to_datetime(oldTimestamp)))
+                    # 转发内容
+                    f.write('\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
+                                                        str(forwardSourceFeed["message"])))
+                    # 附带图片
+                    oldPicArr = forwardSourceFeed["picArr"]
+                    for item in oldPicArr:
+                        f.write('\n[图片]({})'.format(item))
+            f.write('\n\n ------- \n\n')
+
+        f.close()
+
+        # 文件头部信息
+        with open(path, 'r+', encoding='utf-8') as f:
+            old = f.read()
+            f.seek(0)
+            f.write('> {}更新\n'.format(fileHead))
+            f.write(
+                '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taotie6/sampleJSON@main/css/photo_show.css">\n')
+            f.write(old)
+        f.close()
 
 
 def stamp_to_datetime(stamp):
@@ -169,15 +246,23 @@ def datetime_to_stamp(date_time):
 
 
 def multi_repuest(count):
+    """
+    获取全部动态信息
+    :param count: 总页数
+    :return:
+    """
     for i in range(count, 0, -1):
         url = "https://api.coolapk.com/v6/user/feedList?uid=1081091&page=" + str(i)
         print(url)
         data = request_cool(token, url)
         save_file(data)
+        save_detail_file(data)
 
 
 if __name__ == '__main__':
     token = get_token()
     url = "https://api.coolapk.com/v6/user/feedList?uid=1081091&page=1"
     data = request_cool(token, url)
+    # multi_repuest(16)
     save_file(data)
+    save_detail_file(data)
