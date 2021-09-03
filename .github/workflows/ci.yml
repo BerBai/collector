@@ -25,3 +25,4 @@ jobs:
       - name: Test Python Application
         run: |
           python --version
+          pip install -r requirements.txt
