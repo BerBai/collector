@@ -155,7 +155,9 @@ def save_detail_file(data):
     fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
     root = "./savefile/"
 
-    for post in data["data"]:
+    data = data["data"]
+
+    for post in reversed(data):
         # 文件路径
         path = root + str(post["id"]) + ".md"
         old = ''

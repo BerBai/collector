@@ -32,5 +32,5 @@ jobs:
           git pull --rebase
           python main.py
           git add .
-          git commit -m "update by github action"
+          git commit -m "update by action"
           git push
