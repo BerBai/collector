@@ -170,7 +170,7 @@ def save_detail_file(data):
         url = 'https://api.coolapk.com/v6/feed/detail?id=' + str(post["id"])
         detailData = request_cool(get_token(), url)["data"]
         if detailData["dateline"] <= int(read_ini(detailData["dateline"])):
-            break
+            continue
         print(detailData)
         with open(path, 'w+', encoding='utf-8') as f:
             f.seek(0)
