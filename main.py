@@ -78,6 +78,7 @@ def save_file(data):
         with open(path, 'r', encoding='utf-8') as f:
             next(f)
             next(f)
+            next(f)
             old = f.read()
             f.close()
 
@@ -146,6 +147,7 @@ def save_file(data):
         f.write('> {}更新\n'.format(fileHead))
         f.write(
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taotie6/sampleJSON@main/css/photo_show.css">\n')
+        f.write('<meta name="referrer" content="no-referrer" />\n')
         f.write(old)
     f.close()
 
@@ -164,6 +166,7 @@ def save_detail_file(data):
         old = ''
         if os.path.exists(path):
             with open(path, 'r', encoding='utf-8') as f:
+                next(f)
                 next(f)
                 next(f)
                 old = f.read()
@@ -227,6 +230,7 @@ def save_detail_file(data):
             f.write('> {}更新\n'.format(fileHead))
             f.write(
                 '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taotie6/sampleJSON@main/css/photo_show.css">\n')
+            f.write('<meta name="referrer" content="no-referrer" />\n')
             f.write(old)
         f.close()
 
