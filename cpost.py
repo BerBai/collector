@@ -1,0 +1,147 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+from datetime import datetime
+
+import requests
+import hashlib
+import base64
+import time
+import json
+import configparser
+import os
+import re
+
+
+def get_token(deviceId="34de7eef-8400-3300-8922-a1a34e7b9b4f"):
+    """
+    创建访问必要的token
+    :param deviceId:  设备id
+    :return: token
+    """
+    ctime = int(time.time())
+    md5Timestamp = hashlib.new('md5', str(ctime).encode()).hexdigest()
+    arg1 = "token://com.coolapk.market/c67ef5943784d09750dcfbb31020f0ab?" + md5Timestamp + "$" + deviceId + "&com.coolapk.market"
+    md5Str = hashlib.new('md5', base64.b64encode(arg1.encode())).hexdigest()
+    token = md5Str + deviceId + str(hex(ctime))
+    return token
+
+
+def request_cool(token, url):
+    headers = {"X-App-Token": token,
+               "X-App-Version": "10.5.3",
+               "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 6P Build/MMB29M) (#Build; google; Nexus 6P; MMB29M; 6.0.1) +CoolMarket/10.5.3-2009271",
+               "X-Api-Version": "10",
+               "X-App-Device": "QZDIzVHel5EI7UGbn92bnByOpV2dhVHSgszQyoTMzoDM2oTQCpDMwoDNyAyOsxWduByO2ADO4kjNxIDM2gjN3YDOgsDZiBTYykzYkZDNlBzY0ITZ",
+               "Accept-Encoding": "gzip",
+               "X-Dark-Mode": "0",
+               "X-Requested-With": "XMLHttpRequest",
+               "X-App-Code": "2009271",
+               "X-App-Id": "com.coolapk.market"
+               }
+    # 隐藏警告
+    requests.packages.urllib3.disable_warnings()
+    r = requests.get(url, headers=headers, verify=False)
+    data = json.loads(r.text)
+
+    return data
+
+
+def read_ini(newLastTime=0, type='lastTime'):
+    """
+    读取配置文件
+    :return:
+    """
+
+    cfg = configparser.ConfigParser()
+    cfg.read("./save.ini")
+
+    data = cfg.get("time", type)
+    if type == 'lastTime':
+        if newLastTime > int(data):
+            cfg.set("time", "lastTime", str(newLastTime))
+            cfg.write(open("save.ini", "w"))
+    return data
+
+
+def update_file():
+    """
+    保存文件
+    :return:
+    """
+    timeName = time.strftime('%Y{y}%m{m}%d{d}', time.localtime()).format(y='年', m='月', d='日')
+    fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
+    root = "./docs/cpost/"
+
+    # 获取文件
+    fileNames = os.listdir(root)
+    for fileName in fileNames:
+        print("休眠10秒，即将开始{}".format(fileName))
+        time.sleep(10)
+        id, fileType = os.path.splitext(fileName)
+        path = root + fileName
+        page = 1;
+        data = [1]
+
+        # 获取评论
+        while len(data) != 0:
+            url = 'https://api.coolapk.com/v6/feed/replyList?listType=lastupdate_desc&id={}&feedType=feed&discussMode=1&page={}'.format(id, page)
+            page += 1
+            token = get_token()
+            data = request_cool(token, url)["data"]
+            # print(data)
+
+            with open(path, 'a', encoding='utf-8') as f:
+                for item in data:
+                    timestamp = int(item["dateline"]) + 8 * 60 * 60
+                    f.write('- {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item["username"], item["uid"], item["message"]))
+                    if item['pic'] == '':
+                        f.write('\n\n')
+                    else:
+                        f.write('[图片]({})\n\n'.format(item['pic']))
+                    # 更多回复
+                    for item2 in item["replyRows"]:
+                        timestamp = int(item2["dateline"]) + 8 * 60 * 60
+                        if item2['rusername'] != "":
+                            f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
+                                                                                        item2['rusername'], item2['ruid'],
+                                                                                        item2['message']))
+                        else:
+                            f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
+                        if item2['pic'] == '':
+                            f.write('\n\n')
+                        else:
+                            f.write('[图片]({})\n\n'.format(item2['pic']))
+        # 文件头部信息
+        with open(path, 'r+', encoding='utf-8') as f:
+            f.seek(0)
+            f.write('> {}更新\n'.format(fileHead))
+        f.close()
+
+
+def stamp_to_datetime(stamp):
+    """
+    将时间戳(1539100800)转换为 datetime2018-10-09 16:00:00格式并返回
+    :param stamp:
+    :return:
+    """
+    timeStampArray = datetime.utcfromtimestamp(stamp)
+    dateTime = timeStampArray.strftime("%Y-%m-%d %H:%M:%S")
+    # 如果直接返回 date_time则为字符串格式2018-10-09 16:00:00
+    date = datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S")
+    return date
+
+
+def datetime_to_stamp(date_time):
+    """
+    将字符串日期格式转换为时间戳  2018-10-09 16:00:00==>1539100800
+    :param date_time:
+    :return:
+    """
+    # 字符类型的时间
+    time_array = time.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+    time_stamp = int(time.mktime(time_array))
+    return time_stamp
+
+
+if __name__ == '__main__':
+    update_file()
