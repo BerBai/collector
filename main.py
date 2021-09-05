@@ -68,7 +68,7 @@ def save_file(data):
     """
     timeName = time.strftime('%Y{y}%m{m}%d{d}', time.localtime()).format(y='年', m='月', d='日')
     fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
-    root = "./savefile/"
+    root = "./docs/"
     # 时间命名文件
     path = root + timeName + '.md'
     # 固定
@@ -153,7 +153,7 @@ def save_file(data):
 def save_detail_file(data):
     timeName = time.strftime('%Y{y}%m{m}%d{d}', time.localtime()).format(y='年', m='月', d='日')
     fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
-    root = "./savefile/"
+    root = "./docs/"
 
     data = data["data"]
     oldDateline = int(read_ini())
