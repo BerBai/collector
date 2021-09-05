@@ -4,8 +4,8 @@ name: CI
 
 # on: [push, pull_request]
 on:
-  schedule:
-    - cron: "0 0 0 * *"
+  push:
+    branches: [ main ]
 
 jobs:
   build:
