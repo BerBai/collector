@@ -1,0 +1,36 @@
+name: cpost schedule
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+      - name: Checkout actions
+        uses: actions/checkout@v2
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.8
+
+      - name: Bulit Python
+        run: |
+          pip install -r requirements.txt
+
+      - name: Complete App
+        run: |
+          git config --local user.email "tomig@qq.com"
+          git config --local user.name "Ber"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }}
+          git pull --rebase
+          python cpost.py
+          git add .
+          git commit -m "update by action"
+          git push
