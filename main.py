@@ -94,9 +94,9 @@ def save_file(data):
                 messageTitle = item["message_title"]
                 if messageTitle != '':
                     f.write(
-                        '\n\n ## [{} {}]({}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
+                        '\n\n ## [{} {}](./cpost/{}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
                 else:
-                    f.write('\n\n ## [{}]({}.md) '.format(str(stamp_to_datetime(timestamp)), item["id"]))
+                    f.write('\n\n ## [{}](./cpost/{}.md) '.format(str(stamp_to_datetime(timestamp)), item["id"]))
 
                 # 内容
                 f.write('\n\n [{}]({}) ：{} '.format(item["username"], item["shareUrl"], item["message"]))
@@ -155,7 +155,7 @@ def save_file(data):
 def save_detail_file(data):
     timeName = time.strftime('%Y{y}%m{m}%d{d}', time.localtime()).format(y='年', m='月', d='日')
     fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
-    root = "./docs/"
+    root = "./docs/cpost/"
 
     data = data["data"]
     oldDateline = int(read_ini())
