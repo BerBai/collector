@@ -121,10 +121,10 @@ def save_file(data):
                         oldTimestamp = int(forwardSourceFeed["dateline"]) + 8 * 60 * 60
                         oldMessageTitle = forwardSourceFeed["message_title"]
                         if messageTitle != '':
-                            f.write('\n\n> [{} {}]({})'.format(oldMessageTitle, stamp_to_datetime(oldTimestamp),
+                            f.write('\n\n> [{} {}](./cpost/{}.md)'.format(oldMessageTitle, stamp_to_datetime(oldTimestamp),
                                                                forwardSourceFeed["id"]))
                         else:
-                            f.write('\n\n> [{}]({}) '.format(stamp_to_datetime(oldTimestamp), forwardSourceFeed["id"]))
+                            f.write('\n\n> [{}](./cpost/{}.md) '.format(stamp_to_datetime(oldTimestamp), forwardSourceFeed["id"]))
                         # 转发内容
                         f.write(
                             '\n> [{}]({}) : {} '.format(forwardSourceFeed["username"], forwardSourceFeed["shareUrl"],
