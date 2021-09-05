@@ -10,21 +10,20 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css"/>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css"/>
-    <link rel="icon" href="icon.svg" type="image/x-icon"/>
-    <link rel="shortcut icon" href="icon.svg" type="image/x-icon"/>
+    <link rel="icon" href="_media/icon.svg" type="image/x-icon"/>
+    <link rel="shortcut icon" href="_media/icon.svg" type="image/x-icon"/>
 </head>
 <body>
 <div id="app">加载中</div>
 <script>
     window.$docsify = {
+        // logo: '/_media/icon.svg',
         name: 'colletor',
         repo: '',
         loadSidebar: true,// 加载侧边栏
         subMaxLevel: 2,
         loadNavbar: true, // 加载导航栏
         sidebarDisplayLevel: 1,
-        // 设置封面
-        coverpage: true,
         search: {
             noData: {
                 '/': '没有结果!'
@@ -33,7 +32,18 @@
             placeholder: {
                 '/': '搜索'
             }
-        }
+        },
+        // 设置封面
+        coverpage: true,
+        // 自定义方面文件
+        coverpage: 'cover.md',
+        // 多语言封面
+        coverpage: ['/', '/zh-cn/'],
+        // 自定义多语言封面文件
+        coverpage: {
+            '/': 'cover.md',
+            '/zh-cn/': 'cover.md',
+        },
     }
 </script>
 <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
