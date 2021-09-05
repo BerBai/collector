@@ -46,7 +46,7 @@ def request_cool(token, url):
     return data
 
 
-def read_ini(newLastTime=0, type='lastTime'):
+def read_ini(type='posts'):
     """
     读取配置文件
     :return:
@@ -55,17 +55,68 @@ def read_ini(newLastTime=0, type='lastTime'):
     cfg = configparser.ConfigParser()
     cfg.read("./save.ini")
 
-    data = cfg.get("time", type)
-    if type == 'lastTime':
-        if newLastTime > int(data):
-            cfg.set("time", "lastTime", str(newLastTime))
-            cfg.write(open("save.ini", "w"))
-    return data
+    if type == "posts":
+        data = cfg.get("cpost", type).split(',')
+        return data
+    elif type == 'clear':
+        cfg.set("cpost", "posts", '')
+        cfg.write(open("save.ini", "w"))
 
 
-def update_file():
+def update_single_file(id):
     """
-    保存文件
+    增加帖子评论
+    :param id: 帖子id
+    :return:
+    """
+    fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
+    root = "./docs/cpost/"
+
+    print("休眠10秒，即将开始{}".format(id))
+    time.sleep(10)
+    path = root + id + '.md'
+    page = 1
+    data = [1]
+
+    # 获取评论
+    while len(data) != 0:
+        url = 'https://api.coolapk.com/v6/feed/replyList?listType=lastupdate_desc&id={}&feedType=feed&discussMode=1&page={}'.format(id, page)
+        page += 1
+        token = get_token()
+        data = request_cool(token, url)["data"]
+
+        with open(path, 'a', encoding='utf-8') as f:
+            for item in data:
+                timestamp = int(item["dateline"]) + 8 * 60 * 60
+                f.write('- {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item["username"], item["uid"], item["message"]))
+                if item['pic'] == '':
+                    f.write('\n\n')
+                else:
+                    f.write('[图片]({})\n\n'.format(item['pic']))
+                # 更多回复
+                for item2 in item["replyRows"]:
+                    timestamp = int(item2["dateline"]) + 8 * 60 * 60
+                    if item2['rusername'] != "":
+                        f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
+                                                                                    item2['rusername'], item2['ruid'],
+                                                                                    item2['message']))
+                    else:
+                        f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
+                    if item2['pic'] == '':
+                        f.write('\n\n')
+                    else:
+                        f.write('[图片]({})\n\n'.format(item2['pic']))
+    # 文件头部信息
+    with open(path, 'r+', encoding='utf-8') as f:
+        f.seek(0)
+        f.write('> {}更新\n'.format(fileHead))
+    f.close()
+
+
+def update_all_file():
+    """
+    更新全部帖子评论，现只能第一次添加。费时，少用
+    TODO：增量评论
     :return:
     """
     timeName = time.strftime('%Y{y}%m{m}%d{d}', time.localtime()).format(y='年', m='月', d='日')
@@ -79,7 +130,7 @@ def update_file():
         time.sleep(10)
         id, fileType = os.path.splitext(fileName)
         path = root + fileName
-        page = 1;
+        page = 1
         data = [1]
 
         # 获取评论
@@ -88,7 +139,6 @@ def update_file():
             page += 1
             token = get_token()
             data = request_cool(token, url)["data"]
-            # print(data)
 
             with open(path, 'a', encoding='utf-8') as f:
                 for item in data:
@@ -144,4 +194,10 @@ def datetime_to_stamp(date_time):
 
 
 if __name__ == '__main__':
-    update_file()
+    data = read_ini()
+    if data[0] != '':
+        print("update list:" + data)
+        for id in data:
+            print(id)
+            update_single_file(id)
+        read_ini("clear")
