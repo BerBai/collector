@@ -61,6 +61,24 @@ def read_ini(newLastTime=0, type='lastTime'):
     return data
 
 
+def update_ini(tag, key, value):
+    """
+    更新配置文件
+    :param tag: 标记
+    :param key: 键
+    :param value: 值
+    :return:
+    """
+    cfg = configparser.ConfigParser()
+    cfg.read("./save.ini")
+    data = cfg.get(tag, key)
+    if data != '':
+        cfg.set(tag, key, str(data + ',' + str(value)))
+    else:
+        cfg.set(tag, key, str(value))
+    cfg.write(open("save.ini", "w"))
+
+
 def save_file(data):
     """
     保存文件
@@ -89,12 +107,14 @@ def save_file(data):
         for item in data["data"]:
             newLastTime = item["dateline"]
             if newLastTime > int(lastTime):
+                # 更新配置文件
+                update_ini('cpost', 'posts', item["id"])
+
                 # 标题 + 日期
                 timestamp = int(item["dateline"]) + 8 * 60 * 60
                 messageTitle = item["message_title"]
                 if messageTitle != '':
-                    f.write(
-                        '\n\n ## [{} {}](./cpost/{}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
+                    f.write('\n\n ## [{} {}](./cpost/{}.md) '.format(messageTitle, str(stamp_to_datetime(timestamp)), item["id"]))
                 else:
                     f.write('\n\n ## [{}](./cpost/{}.md) '.format(str(stamp_to_datetime(timestamp)), item["id"]))
 
@@ -122,7 +142,7 @@ def save_file(data):
                         oldMessageTitle = forwardSourceFeed["message_title"]
                         if messageTitle != '':
                             f.write('\n\n> [{} {}](./cpost/{}.md)'.format(oldMessageTitle, stamp_to_datetime(oldTimestamp),
-                                                               forwardSourceFeed["id"]))
+                                                                          forwardSourceFeed["id"]))
                         else:
                             f.write('\n\n> [{}](./cpost/{}.md) '.format(stamp_to_datetime(oldTimestamp), forwardSourceFeed["id"]))
                         # 转发内容
@@ -176,7 +196,6 @@ def save_detail_file(data):
         read_ini(detailData["dateline"])
         if detailData["dateline"] <= oldDateline:
             break
-        print(detailData)
         with open(path, 'w+', encoding='utf-8') as f:
             f.seek(0)
             timestamp = int(detailData["dateline"]) + 8 * 60 * 60

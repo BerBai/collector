@@ -196,8 +196,8 @@ def datetime_to_stamp(date_time):
 if __name__ == '__main__':
     data = read_ini()
     if data[0] != '':
-        print("update list:" + data)
+        print("update list:")
+        print(data)
         for id in data:
-            print(id)
             update_single_file(id)
         read_ini("clear")
