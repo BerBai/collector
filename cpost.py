@@ -70,8 +70,7 @@ def update_single_file(id):
     :return:
     """
     fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
-    # root = "./docs/cpost/"
-    root = "./docs/test/"
+    root = "./docs/cpost/"
 
     print("休眠10秒，即将开始{}".format(id))
     time.sleep(10)
