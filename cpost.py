@@ -70,7 +70,8 @@ def update_single_file(id):
     :return:
     """
     fileHead = time.strftime('%Y{y}%m{m}%d{d}%H{h}', time.localtime()).format(y='年', m='月', d='日', h='点')
-    root = "./docs/cpost/"
+    # root = "./docs/cpost/"
+    root = "./docs/test/"
 
     print("休眠10秒，即将开始{}".format(id))
     time.sleep(10)
@@ -93,19 +94,56 @@ def update_single_file(id):
                     f.write('\n\n')
                 else:
                     f.write('[图片]({})\n\n'.format(item['pic']))
-                # 更多回复
-                for item2 in item["replyRows"]:
-                    timestamp = int(item2["dateline"]) + 8 * 60 * 60
-                    if item2['rusername'] != "":
-                        f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
-                                                                                    item2['rusername'], item2['ruid'],
-                                                                                    item2['message']))
-                    else:
-                        f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
-                    if item2['pic'] == '':
-                        f.write('\n\n')
-                    else:
-                        f.write('[图片]({})\n\n'.format(item2['pic']))
+                # 回复评论
+                if item["replyRowsMore"] > 0:
+                    # 展开更多评论
+                    fpage = 1
+                    fdata = [1]
+                    while len(fdata) != 0:
+                        furl = "https://api.coolapk.com/v6/feed/replyList?feedType=feed_reply&discussMode=0&id={}&listType=&fromFeedAuthor=0&blockStatus=0&page={}".format(item['id'], fpage)
+                        fpage += 1
+                        ftoken = get_token()
+                        fdata = request_cool(ftoken, furl)["data"]
+                        for fitem in fdata:
+                            ftimestamp = int(fitem["dateline"]) + 8 * 60 * 60
+                            if fitem['rusername'] != "":
+                                f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(ftimestamp), fitem['username'], fitem['uid'],
+                                                                                            fitem['rusername'], fitem['ruid'],
+                                                                                            fitem['message']))
+                            else:
+                                f.write(
+                                    '    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(ftimestamp), fitem["username"], fitem["uid"], fitem["message"]))
+                            if fitem['pic'] == '':
+                                f.write('\n\n')
+                            else:
+                                f.write('[图片]({})\n\n'.format(fitem['pic']))
+
+
+                else:
+                    for item2 in item["replyRows"]:
+                        timestamp = int(item2["dateline"]) + 8 * 60 * 60
+                        if item2['rusername'] != "":
+                            f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
+                                                                                        item2['rusername'], item2['ruid'],
+                                                                                        item2['message']))
+                        else:
+                            f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
+                        if item2['pic'] == '':
+                            f.write('\n\n')
+                        else:
+                            f.write('[图片]({})\n\n'.format(item2['pic']))
+                # for item2 in item["replyRows"]:
+                #     timestamp = int(item2["dateline"]) + 8 * 60 * 60
+                #     if item2['rusername'] != "":
+                #         f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
+                #                                                                     item2['rusername'], item2['ruid'],
+                #                                                                     item2['message']))
+                #     else:
+                #         f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
+                #     if item2['pic'] == '':
+                #         f.write('\n\n')
+                #     else:
+                #         f.write('[图片]({})\n\n'.format(item2['pic']))
     # 文件头部信息
     with open(path, 'r+', encoding='utf-8') as f:
         f.seek(0)
@@ -142,25 +180,51 @@ def update_all_file():
 
             with open(path, 'a', encoding='utf-8') as f:
                 for item in data:
+                    # 回复post
                     timestamp = int(item["dateline"]) + 8 * 60 * 60
                     f.write('- {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item["username"], item["uid"], item["message"]))
                     if item['pic'] == '':
                         f.write('\n\n')
                     else:
                         f.write('[图片]({})\n\n'.format(item['pic']))
-                    # 更多回复
-                    for item2 in item["replyRows"]:
-                        timestamp = int(item2["dateline"]) + 8 * 60 * 60
-                        if item2['rusername'] != "":
-                            f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
-                                                                                        item2['rusername'], item2['ruid'],
-                                                                                        item2['message']))
-                        else:
-                            f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
-                        if item2['pic'] == '':
-                            f.write('\n\n')
-                        else:
-                            f.write('[图片]({})\n\n'.format(item2['pic']))
+                    # 回复评论
+                    if item["replyRowsMore"] > 0:
+                        # 展开更多评论
+                        fpage = 1
+                        fdata = [1]
+                        while len(fdata) != 0:
+                            furl = "https://api.coolapk.com/v6/feed/replyList?feedType=feed_reply&id={}&page={}".format(item['fid'], fpage)
+                            fpage += 1
+                            ftoken = get_token()
+                            fdata = request_cool(ftoken, furl)["data"]
+                            for fitem in fdata:
+                                ftimestamp = int(fitem["dateline"]) + 8 * 60 * 60
+                                if fitem['rusername'] != "":
+                                    f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(ftimestamp), fitem['username'], fitem['uid'],
+                                                                                                fitem['rusername'], fitem['ruid'],
+                                                                                                fitem['message']))
+                                else:
+                                    f.write(
+                                        '    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(ftimestamp), fitem["username"], fitem["uid"], fitem["message"]))
+                                if fitem['pic'] == '':
+                                    f.write('\n\n')
+                                else:
+                                    f.write('[图片]({})\n\n'.format(fitem['pic']))
+
+
+                    else:
+                        for item2 in item["replyRows"]:
+                            timestamp = int(item2["dateline"]) + 8 * 60 * 60
+                            if item2['rusername'] != "":
+                                f.write('    - {} [{}](uid={}) 回复 [{}](uid={}): {} '.format(stamp_to_datetime(timestamp), item2['username'], item2['uid'],
+                                                                                            item2['rusername'], item2['ruid'],
+                                                                                            item2['message']))
+                            else:
+                                f.write('    - {} [{}](uid={}) : {} '.format(stamp_to_datetime(timestamp), item2["username"], item2["uid"], item2["message"]))
+                            if item2['pic'] == '':
+                                f.write('\n\n')
+                            else:
+                                f.write('[图片]({})\n\n'.format(item2['pic']))
         # 文件头部信息
         with open(path, 'r+', encoding='utf-8') as f:
             f.seek(0)
