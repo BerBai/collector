@@ -219,8 +219,11 @@ def save_detail_file(data):
                     f.write('\n</div>')
 
             # 是否转发 空：原创 feed：转发+评论
-            if ("sourceFeed" in detailData):
-                forwardSourceFeed = detailData["sourceFeed"]
+            if ("sourceFeed" in detailData or "forwardSourceFeed" in detailData):
+                if "forwardSourceFeed" in detailData:
+                    forwardSourceFeed = detailData["forwardSourceFeed"]
+                else:
+                    forwardSourceFeed = detailData["sourceFeed"]
                 if forwardSourceFeed is None:
                     f.write('\n\n> {} '.format("原贴已不存在"))
                 else:
