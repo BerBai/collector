@@ -298,6 +298,7 @@ def multi_repuest(count):
 
 if __name__ == '__main__':
     token = get_token()
+    print(token)
     url = "https://api.coolapk.com/v6/user/feedList?uid=1081091&page=1"
     data = request_cool(token, url)
     # multi_repuest(16)
