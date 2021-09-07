@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css"/>
     <link rel="icon" href="_media/icon.svg" type="image/x-icon"/>
     <link rel="shortcut icon" href="_media/icon.svg" type="image/x-icon"/>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-dark-mode@latest/dist/style.min.css"/>
 </head>
 <body>
 <div id="app">加载中</div>
@@ -66,6 +65,20 @@
                 textColor: "var(--theme-color)"
             }
         },
+        progress: {
+            position: "top",
+            color: "var(--theme-color,#42b983)",
+            height: "3px",
+        },
+        autoFooter: {
+            name: ' Ber',
+            url: 'https://github.com/BerBai',
+            copyYear: '2018',
+            policy: false,
+            terms: false,
+            cookies: false,
+            onBody: true
+        }
     }
 </script>
 <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
@@ -77,5 +90,8 @@
 <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@markbattistella/docsify-sidebarfooter@latest"></script>
+
 </body>
 </html>
