@@ -1,6 +1,6 @@
 > [原文](https://fantianzuo.blog.csdn.net/article/details/115355061) 于 2021-03-31 17:06:18
 > 
-> 兔老大RabbitMQ 17级 就职于腾讯
+> 导语： 兔老大RabbitMQ 17级 现就职于腾讯
 
 # 这篇不讨好任何人的回忆录，记录了我从双非学校到BAT/TMD六offer的原因
 
