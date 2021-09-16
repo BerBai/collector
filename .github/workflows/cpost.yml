@@ -34,3 +34,4 @@ jobs:
           git add .
           git commit -m "update by action"
           git push
+        timeout-minutes: 15
