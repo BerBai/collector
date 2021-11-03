@@ -6,5 +6,7 @@
     - [碎片知识整理](inspire/碎片知识整理.md)
 - [签]()
     - [为何酷安 努力 机遇 阶级](cpost/31024382)
+- [养生]()
+    - [养发](preserve/养发)
 
 <footer id="mb-footer"></footer>
