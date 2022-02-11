@@ -26,7 +26,7 @@ jobs:
 
       - name: Complete App
         run: |
-          git config --local user.email "tomig@qq.com"
+          git config --local user.email "bai5775@outlook.com"
           git config --local user.name "Ber"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }}
           git pull --rebase
