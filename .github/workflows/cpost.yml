@@ -2,7 +2,7 @@ name: cpost schedule
 
 on:
   schedule:
-    - cron: "30 0,12 * * *"
+    - cron: "30 0,8,16 * * *"
 
 jobs:
   build:
