@@ -4,6 +4,7 @@
     - [兔老大RabbitMQ](inspire/兔老大RabbitMQ.md)
     - [半佛仙人，他从不买水军，凭什么一年内做到B站500万粉丝？](inspire/半佛仙人.md)
     - [碎片知识整理](inspire/碎片知识整理.md)
+    - [理性与执行力](inspire/rational)
 - [签]()
     - [为何酷安 努力 机遇 阶级](cpost/31024382)
     - [经济 市场认知 意识](cpost/31346701)
