@@ -11,6 +11,6 @@
     - [读书方法](cpost/read)
 - [养生]()
     - [养发](preserve/养发)
-- [短句](Allove) 
-
+- [短句]() 
+    - [情感教育](Allove/emotional-education.md)
 <footer id="mb-footer"></footer>
